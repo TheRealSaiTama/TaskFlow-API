@@ -10,6 +10,7 @@ from models import Base
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 import uvicorn
+from sqlalchemy.orm import joinedload
 
 app = FastAPI()
 
@@ -130,7 +131,7 @@ async def getboard(db: Session=Depends(get_db), current_user: schemas.User = Dep
 
 @app.get("/boards/{board_id}", response_model=schemas.Board)
 async def get_board(board_id: int, db: Session=Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
-    board = db.query(models.Board).filter(models.Board.id == board_id, models.Board.user_id == current_user.id).first()
+    board = db.query(models.Board).options(joinedload(models.Board.columns).joinedload(models.Column.cards)).filter(models.Board.id == board_id, models.Board.user_id == current_user.id).first()
     if not board:
         raise HTTPException(status_code=404, detail="Board not found")
     return board

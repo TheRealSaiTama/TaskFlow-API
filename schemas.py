@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional
+from typing import Optional, List
 
 class UserBase(BaseModel):
     email: str
@@ -36,6 +36,7 @@ class BoardCreate(BoardBase):
 class Board(BoardBase):
     id: int
     user_id: int 
+    columns: List[Column] = []
     model_config = ConfigDict(from_attributes=True)
 
 class ColumnBase(BaseModel):
@@ -47,6 +48,7 @@ class ColumnCreate(ColumnBase):
 class Column(ColumnBase):
     id: int
     board_id: int
+    cards: List['Card'] = []
     model_config = ConfigDict(from_attributes=True)
 
 class CardBase(BaseModel):
